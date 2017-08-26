@@ -53,7 +53,7 @@ final class Constants {
 
     static {
         // San Francisco International Airport.
-        BAY_AREA_LANDMARKS.put("SFO", new LatLng(37.621313, -122.378955));
+        BAY_AREA_LANDMARKS.put("SFO", new LatLng(12.9022706, 77.605168));
 
         // Googleplex.
         BAY_AREA_LANDMARKS.put("GOOGLE", new LatLng(37.422611,-122.0840577));

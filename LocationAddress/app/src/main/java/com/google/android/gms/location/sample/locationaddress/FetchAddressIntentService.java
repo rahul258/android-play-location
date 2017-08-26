@@ -76,16 +76,19 @@ public class FetchAddressIntentService extends IntentService {
 
         // Get the location passed to this service through an extra.
         Location location = intent.getParcelableExtra(Constants.LOCATION_DATA_EXTRA);
+        String location_address;
+        location_address = intent.getStringExtra(Constants.ADDRESSC);
+        Log.wtf("location_address",location_address);
 
         // Make sure that the location data was really sent over through an extra. If it wasn't,
         // send an error error message and return.
-        if (location == null) {
+
+        /*if (location == null) {
             errorMessage = getString(R.string.no_location_data_provided);
             Log.wtf(TAG, errorMessage);
             deliverResultToReceiver(Constants.FAILURE_RESULT, errorMessage);
             return;
-        }
-
+        }*/
         // Errors could still arise from using the Geocoder (for example, if there is no
         // connectivity, or if the Geocoder is given illegal location data). Or, the Geocoder may
         // simply not have an address for a location. In all these cases, we communicate with the
@@ -105,9 +108,7 @@ public class FetchAddressIntentService extends IntentService {
             // Using getFromLocation() returns an array of Addresses for the area immediately
             // surrounding the given latitude and longitude. The results are a best guess and are
             // not guaranteed to be accurate.
-            addresses = geocoder.getFromLocation(
-                    location.getLatitude(),
-                    location.getLongitude(),
+            addresses = geocoder.getFromLocationName(location_address,
                     // In this sample, we get just a single address.
                     1);
         } catch (IOException ioException) {
@@ -117,9 +118,9 @@ public class FetchAddressIntentService extends IntentService {
         } catch (IllegalArgumentException illegalArgumentException) {
             // Catch invalid latitude or longitude values.
             errorMessage = getString(R.string.invalid_lat_long_used);
-            Log.e(TAG, errorMessage + ". " +
+            /*Log.e(TAG, errorMessage + ". " +
                     "Latitude = " + location.getLatitude() +
-                    ", Longitude = " + location.getLongitude(), illegalArgumentException);
+                    ", Longitude = " + location.getLongitude(), illegalArgumentException);*/
         }
 
         // Handle case where no address was found.
@@ -142,9 +143,10 @@ public class FetchAddressIntentService extends IntentService {
             // getPostalCode() ("94043", for example)
             // getCountryCode() ("US", for example)
             // getCountryName() ("United States", for example)
-            for(int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
-                addressFragments.add(address.getAddressLine(i));
-            }
+
+            addressFragments.add(String.valueOf(address.getLatitude()));
+            addressFragments.add(String.valueOf(address.getLongitude()));
+
             Log.i(TAG, getString(R.string.address_found));
             deliverResultToReceiver(Constants.SUCCESS_RESULT,
                     TextUtils.join(System.getProperty("line.separator"), addressFragments));

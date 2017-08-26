@@ -29,8 +29,11 @@
         android:id="@+id/fetch_address_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/fetch_address"
-        android:onClick="fetchAddressButtonHandler" />
+        android:text="@string/get_latitude_longitude"
+        android:onClick="fetchAddressButtonHandler"
+        android:layout_below="@+id/location_address_view"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="19dp" />
 
     <ProgressBar
         android:id="@+id/progress_bar"
@@ -47,4 +50,15 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="@dimen/text_margin_top"
         android:textSize="@dimen/default_text_size" />
+
+    <EditText
+        android:id="@+id/address_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="text"
+        android:text="@string/enter_address"
+        android:visibility="visible"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

@@ -33,6 +33,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -78,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
      * Represents a geographical location.
      */
     private Location mLastLocation;
-
+    private String address;
     /**
      * Tracks whether the user has requested an address. Becomes true when the user requests an
      * address and false when the address (or an error message) is delivered.
@@ -99,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
      * Displays the location address.
      */
     private TextView mLocationAddressTextView;
-
+    private EditText inputaddress;
     /**
      * Visible while the address is being fetched.
      */
@@ -120,13 +121,14 @@ public class MainActivity extends AppCompatActivity {
         mLocationAddressTextView = (TextView) findViewById(R.id.location_address_view);
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mFetchAddressButton = (Button) findViewById(R.id.fetch_address_button);
+        inputaddress = (EditText) findViewById(R.id.address_input);
 
         // Set defaults, then update using values stored in the Bundle.
-        mAddressRequested = false;
+        //mAddressRequested = false;
         mAddressOutput = "";
         updateValuesFromBundle(savedInstanceState);
 
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        //mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         updateUIWidgets();
     }
@@ -135,11 +137,12 @@ public class MainActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
 
-        if (!checkPermissions()) {
+        /*if (!checkPermissions()) {
             requestPermissions();
         } else {
             getAddress();
-        }
+        }*/
+
     }
 
     /**
@@ -148,9 +151,9 @@ public class MainActivity extends AppCompatActivity {
     private void updateValuesFromBundle(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             // Check savedInstanceState to see if the address was previously requested.
-            if (savedInstanceState.keySet().contains(ADDRESS_REQUESTED_KEY)) {
+           /* if (savedInstanceState.keySet().contains(ADDRESS_REQUESTED_KEY)) {
                 mAddressRequested = savedInstanceState.getBoolean(ADDRESS_REQUESTED_KEY);
-            }
+            }*/
             // Check savedInstanceState to see if the location address string was previously found
             // and stored in the Bundle. If it was found, display the address string in the UI.
             if (savedInstanceState.keySet().contains(LOCATION_ADDRESS_KEY)) {
@@ -165,7 +168,9 @@ public class MainActivity extends AppCompatActivity {
      */
     @SuppressWarnings("unused")
     public void fetchAddressButtonHandler(View view) {
-        if (mLastLocation != null) {
+        //if(madresslocation!==null)
+        getAddress();
+        if (address!= null) {
             startIntentService();
             return;
         }
@@ -173,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
         // If we have not yet retrieved the user location, we process the user's request by setting
         // mAddressRequested to true. As far as the user is concerned, pressing the Fetch Address button
         // immediately kicks off the process of getting the address.
-        mAddressRequested = true;
+        //mAddressRequested = true;
         updateUIWidgets();
     }
 
@@ -189,8 +194,8 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(Constants.RECEIVER, mResultReceiver);
 
         // Pass the location data as an extra to the service.
-        intent.putExtra(Constants.LOCATION_DATA_EXTRA, mLastLocation);
-
+        //intent.putExtra(Constants.LOCATION_DATA_EXTRA, mLastLocation);
+        intent.putExtra(Constants.ADDRESSC,address);
         // Start the service. If the service isn't already running, it is instantiated and started
         // (creating a process for it if needed); if it is running then it remains running. The
         // service kills itself automatically once all intents are processed.
@@ -202,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
      */
     @SuppressWarnings("MissingPermission")
     private void getAddress() {
-        mFusedLocationClient.getLastLocation()
+      /*  mFusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
@@ -232,7 +237,13 @@ public class MainActivity extends AppCompatActivity {
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "getLastLocation:onFailure", e);
                     }
-                });
+                });*/
+
+         address = inputaddress.getText().toString();
+       /* if(address==null)
+        {
+            Toast.makeText(this, "provide address", Toast.LENGTH_SHORT).show();
+        }*/
     }
 
     /**
@@ -265,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         // Save whether the address has been requested.
-        savedInstanceState.putBoolean(ADDRESS_REQUESTED_KEY, mAddressRequested);
+        /*savedInstanceState.putBoolean(ADDRESS_REQUESTED_KEY, mAddressRequested);*/
 
         // Save the address string.
         savedInstanceState.putString(LOCATION_ADDRESS_KEY, mAddressOutput);
@@ -292,7 +303,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Show a toast message if an address was found.
             if (resultCode == Constants.SUCCESS_RESULT) {
-                showToast(getString(R.string.address_found));
+                showToast("Found");
             }
 
             // Reset. Enable the Fetch Address button and stop showing the progress bar.
@@ -301,43 +312,34 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Shows a {@link Snackbar} using {@code text}.
-     *
-     * @param text The Snackbar text.
-     */
-    private void showSnackbar(final String text) {
+
+
+   /* private void showSnackbar(final String text) {
         View container = findViewById(android.R.id.content);
         if (container != null) {
             Snackbar.make(container, text, Snackbar.LENGTH_LONG).show();
         }
     }
 
-    /**
-     * Shows a {@link Snackbar}.
-     *
-     * @param mainTextStringId The id for the string resource for the Snackbar text.
-     * @param actionStringId   The text of the action item.
-     * @param listener         The listener associated with the Snackbar action.
-     */
+   /*
     private void showSnackbar(final int mainTextStringId, final int actionStringId,
                               View.OnClickListener listener) {
         Snackbar.make(findViewById(android.R.id.content),
                 getString(mainTextStringId),
                 Snackbar.LENGTH_INDEFINITE)
                 .setAction(getString(actionStringId), listener).show();
-    }
+    }*/
 
-    /**
+    /*
      * Return the current state of the permissions needed.
      */
-    private boolean checkPermissions() {
+    /*private boolean checkPermissions() {
         int permissionState = ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
         return permissionState == PackageManager.PERMISSION_GRANTED;
-    }
+    }*/
 
-    private void requestPermissions() {
+    /*private void requestPermissions() {
         boolean shouldProvideRationale =
                 ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.ACCESS_FINE_LOCATION);
@@ -369,10 +371,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Callback received when a permissions request has been completed.
+
+     //Callback received when a permissions request has been completed.
      */
-    @Override
+
+    /*@Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         Log.i(TAG, "onRequestPermissionResult");
@@ -413,5 +416,5 @@ public class MainActivity extends AppCompatActivity {
                         });
             }
         }
-    }
+    }*/
 }
